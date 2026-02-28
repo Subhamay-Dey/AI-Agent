@@ -17,7 +17,7 @@ app.use(
 
   app.post("/webhook/github", (req: any, res: Response) => {
     const signature = req.headers["x-hub-signature-256"] as string;
-    const secret = "supersecret123"
+    const secret = "supersecret123";
   
     const hash =
       "sha256=" +
