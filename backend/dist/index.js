@@ -15,14 +15,14 @@ app.post("/webhook/github", (req, res) => {
     const hash = "sha256=" +
         crypto
             .createHmac("sha256", secret)
-            .update(JSON.stringify(req.body))
+            .update(req.rawBody) // ✅ USE RAW BODY
             .digest("hex");
     if (hash !== signature) {
-        console.log("Invalid signature");
+        console.log("❌ Invalid signature");
         return res.status(401).send("Invalid signature");
     }
     const event = req.headers["x-github-event"];
-    console.log("Event received:", event);
+    console.log("✅ Event received:", event);
     if (event === "push") {
         const { repository, commits } = req.body;
         console.log("Repository:", repository.full_name);

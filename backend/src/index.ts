@@ -15,7 +15,7 @@ app.use(
     })
   );
 
-app.post("/webhook/github", (req: Request, res: Response) => {
+  app.post("/webhook/github", (req: any, res: Response) => {
     const signature = req.headers["x-hub-signature-256"] as string;
     const secret = "supersecret123";
   
@@ -23,17 +23,16 @@ app.post("/webhook/github", (req: Request, res: Response) => {
       "sha256=" +
       crypto
         .createHmac("sha256", secret)
-        .update(JSON.stringify(req.body))
+        .update(req.rawBody)   // ✅ USE RAW BODY
         .digest("hex");
   
     if (hash !== signature) {
-      console.log("Invalid signature");
+      console.log("❌ Invalid signature");
       return res.status(401).send("Invalid signature");
     }
   
     const event = req.headers["x-github-event"];
-  
-    console.log("Event received:", event);
+    console.log("✅ Event received:", event);
   
     if (event === "push") {
       const { repository, commits } = req.body;
