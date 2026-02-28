@@ -1,39 +1,19 @@
 import express, {type Application, type Request, type Response} from 'express';
 import "dotenv/config";
 import http from 'http';
-import { Server } from 'socket.io';
 import crypto from "crypto";
 
 const app:Application = express();
 
 const PORT = process.env.PORT || 8000;
 
-app.use(express.json());
-
-// Create HTTP server
-const httpServer = http.createServer(app);
-
-// Initialize Socket.IO
-const io = new Server(httpServer, {
-    cors: {
-      origin: "*",
-    },
-  });
-
-  // Socket connection
-io.on("connection", (socket) => {
-    console.log("Client connected:", socket.id);
-  
-    socket.on("message", (data) => {
-      console.log("Received:", data);
-  
-      io.emit("message", data);
-    });
-  
-    socket.on("disconnect", () => {
-      console.log("Client disconnected:", socket.id);
-    });
-  });
+app.use(
+    express.json({
+      verify: (req: any, res, buf) => {
+        req.rawBody = buf;
+      },
+    })
+  );
 
 app.post("/webhook/github", (req: Request, res: Response) => {
     const signature = req.headers["x-hub-signature-256"] as string;
